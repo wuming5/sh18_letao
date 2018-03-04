@@ -53,6 +53,34 @@ $(function() {
     })
 
     // 2.给表单注册一个校验成功的事件， 成功的时候阻止表单的默认提交，使用ajax进行。
-    $('form').on('success.form.bv',)
+    $('form').on('success.form.bv',function(e){
+        e.preventDefault();
+        $.ajax({
+            type:'POST',
+            url:'/employee/employeeLogin',
+            data:$('form').serialize(),
+            dataType:'json',
+            success:function(info){
+                console.log(info);
+                if(info.error == 1000) {
+                    //把username这个字段改成校验失败 并且更改提示信息
+                    $('form').data('bootstrapValidator').updateStatus('username','INVALID','callback');
+                }
 
+                if(info.error == 1001) {
+                    $('form').data('bootstrapValidator').updateStatus('password','INVALID','callback');
+                }
+
+                if(info.success) {
+                    location.href='index.html';
+                }
+            }
+        })
+    })
+
+
+    // 3、 重置时，清除所有表单样式
+    $("[type=reset]").on("click",function(){
+        $("form").data("bootstrapValidator").resetForm(true);
+    })
 });
